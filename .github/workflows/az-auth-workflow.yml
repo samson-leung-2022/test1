@@ -1,11 +1,25 @@
-name: Terraform via Azure SP
+name: First Workflow via az login
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - test
+          - prod
+        default: dev
 
 jobs:
-  terraform:
+  first-job:
     runs-on: ubuntu-latest
+
+    # This is required to access secrets stored
+    # under the selected GitHub Environment
+    environment: ${{ inputs.environment }}
 
     steps:
       - name: Checkout repository
@@ -18,7 +32,9 @@ jobs:
 
       - name: Test Azure Login
         run: |
+          echo "Selected GitHub environment: ${{ inputs.environment }}"
+          echo "===== Azure Account ====="
           az account show --output table
 
-      # Terraform setup comes next
-
+          echo "===== Resource Groups ====="
+          az group list --output table
